@@ -1,11 +1,12 @@
 -module(composerl).
 -author("Anton Zhiliuk").
 
--export([notes/1]).
+-export([notes/1, chords/1]).
 
 -type note() :: 'C'|'C#'|'D'|'D#'|'E'|'F'|'F#'|'G'|'G#'|'A'|'A#'|'B'.
 -type mode() :: 1..7 | major | minor.
 -type interval() :: w | s.
+-type chord() :: {note(), note(), note()}.
 -record(key, { root :: note(),
 	       mode :: mode()}).
 
@@ -46,3 +47,14 @@ notes([Note1,_Note2|Notes], [w|Intervals], Acc) ->
     notes(Notes, Intervals, [Note1|Acc]);
 notes([Note|Notes], [h|Intervals], Acc) ->
     notes(Notes, Intervals, [Note|Acc]).
+
+rotate(Num, List) ->
+    {List1, List2} = lists:split(Num, List),
+    List2 ++ List1.
+
+-spec chords(#key{}) -> [chord()].
+chords(Key) ->
+    L1 = notes(Key),
+    L2 = rotate(2, L1),
+    L3 = rotate(2, L2),
+    lists:zip3(L1, L2, L3).
