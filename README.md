@@ -68,7 +68,10 @@ composerl:chords({key, 'F#', 5}, 4).
  ['E','G#','B','D#']]
 ```
 
-
+### TO DO:
+1. Add more scales. (pentatonic, harmonic minor, octotonic, indian\celtic scale etc...)
+2. Output to midi.
+3. Tooling for composing chord progressions.
 
 ### Æ
 Music is Math.

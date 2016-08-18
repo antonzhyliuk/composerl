@@ -2,6 +2,7 @@
 -author("Anton Zhiliuk").
 
 -export([notes/1, chords/2, key/1]).
+-compile(export_all).
 
 -type note() :: 'C'|'C#'|'D'|'D#'|'E'|'F'|'F#'|'G'|'G#'|'A'|'A#'|'B'.
 -type mode() :: 1..7 | major | minor.
@@ -57,6 +58,9 @@ notes([Note|Notes], [h|Intervals], Acc) ->
     notes(Notes, Intervals, [Note|Acc]).
 
 -spec rotations([note()], 3..6) -> [NoteRotation] when NoteRotation :: [note()].
+%% Used for generation of list rotations by 2:
+%% rotations([1,2,3,4,5], 2).
+%% [[1,2,3,4,5], [3,4,5,1,2]]
 rotations(List, RotationsCount) ->
     rotations(rotate(2, List), RotationsCount - 1, [List]).
 
@@ -71,7 +75,7 @@ rotate(Num, List) ->
 
 -spec transpose([list()]) -> [list()].
 transpose([List|Lists]) ->
-    InitialAcc = lists:map(fun(El) -> [El] end, List),
+    InitialAcc = lists:map(fun(El) -> [El] end, List), % initial LofL accumulator
     Transposition = transpose(Lists, InitialAcc),
     lists:map(fun lists:reverse/1, Transposition).
 transpose([], Acc) ->
@@ -80,6 +84,7 @@ transpose([List|Lists], Acc) ->
     NewAcc = add_column(List, Acc, []),
     transpose(Lists, NewAcc).
 
+%% cryptic name, there we apply one list from src LofL to every list of dest LofL
 add_column([El|Els], [List|Lists], Acc) ->
     add_column(Els, Lists, [[El|List]|Acc]);
 add_column([], [], Acc) -> lists:reverse(Acc).
@@ -91,7 +96,9 @@ chords(Key, ChordSize) ->
 
 -spec all_keys() -> [#key{}].
 all_keys() ->
+    % map per Note
     lists:flatmap(fun(Note) ->
+			  % map per Mode
 			  lists:map(fun(Mode) ->
 					    #key{root = Note, mode = Mode}
 				    end,  lists:seq(1, 7))
@@ -105,7 +112,13 @@ match_rate(SampleList, Notes) ->
 				      false -> Acc
 				  end
 			  end, 0, Notes),
-    Matches / length(Notes).
+    {SampleListLength, NotesLength} = {length(SampleList), length(Notes)},
+    % idk is this necessary, maybe rating value will be changed in future.
+    case SampleListLength > NotesLength of
+	true -> Matches / SampleListLength;
+	false -> Matches / NotesLength
+    end.
+
 
 -spec key([note()]) -> [{MatchRate, #key{}}] when MatchRate :: float().
 key(Notes) ->
