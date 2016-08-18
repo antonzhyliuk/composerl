@@ -1,12 +1,13 @@
 -module(composerl).
 -author("Anton Zhiliuk").
 
--export([notes/1, chords/1]).
+-export([notes/1, chords/2]).
 
 -type note() :: 'C'|'C#'|'D'|'D#'|'E'|'F'|'F#'|'G'|'G#'|'A'|'A#'|'B'.
 -type mode() :: 1..7 | major | minor.
 -type interval() :: w | s.
--type chord() :: {note(), note(), note()}.
+-type chord() :: [note()].
+
 -record(key, { root :: note(),
 	       mode :: mode()}).
 
@@ -48,13 +49,35 @@ notes([Note1,_Note2|Notes], [w|Intervals], Acc) ->
 notes([Note|Notes], [h|Intervals], Acc) ->
     notes(Notes, Intervals, [Note|Acc]).
 
+-spec rotations([note()], 3..6) -> [NoteRotation] when NoteRotation :: [note()].
+rotations(List, RotationsCount) ->
+    rotations(rotate(2, List), RotationsCount - 1, [List]).
+
+rotations(_, 0, Acc) ->
+    lists:reverse(Acc);
+rotations(List, RotationsCount, Acc) ->
+    rotations(rotate(2, List), RotationsCount - 1, [List|Acc]).
+
 rotate(Num, List) ->
     {List1, List2} = lists:split(Num, List),
     List2 ++ List1.
 
--spec chords(#key{}) -> [chord()].
-chords(Key) ->
-    L1 = notes(Key),
-    L2 = rotate(2, L1),
-    L3 = rotate(2, L2),
-    lists:zip3(L1, L2, L3).
+-spec transpose([list()]) -> [list()].
+transpose([List|Lists]) ->
+    InitialAcc = lists:map(fun(El) -> [El] end, List),
+    Transposition = transpose(Lists, InitialAcc),
+    lists:map(fun lists:reverse/1, Transposition).
+transpose([], Acc) ->
+    Acc;
+transpose([List|Lists], Acc) ->
+    NewAcc = add_column(List, Acc, []),
+    transpose(Lists, NewAcc).
+
+add_column([El|Els], [List|Lists], Acc) ->
+    add_column(Els, Lists, [[El|List]|Acc]);
+add_column([], [], Acc) -> lists:reverse(Acc).
+
+-spec chords(#key{}, 3..6) -> [chord()].
+chords(Key, ChordSize) ->
+    Rotations = rotations(notes(Key), ChordSize),
+    transpose(Rotations).
