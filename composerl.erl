@@ -1,7 +1,7 @@
 -module(composerl).
 -author("Anton Zhiliuk").
 
--export([notes/1, chords/2]).
+-export([notes/1, chords/2, key/1]).
 
 -type note() :: 'C'|'C#'|'D'|'D#'|'E'|'F'|'F#'|'G'|'G#'|'A'|'A#'|'B'.
 -type mode() :: 1..7 | major | minor.
@@ -20,7 +20,14 @@ mode_intervals(5) -> [w, w, h, w, w, h, w];
 mode_intervals(6) -> [w, h, w, w, h, w, w];
 mode_intervals(7) -> [h, w, w, h, w, w, w];
 mode_intervals(major) -> mode_intervals(1);
-mode_intervals(minor) -> mode_intervals(6).
+mode_intervals(minor) -> mode_intervals(6);
+mode_intervals(ionian) -> mode_intervals(1);
+mode_intervals(dorian) -> mode_intervals(2);
+mode_intervals(phrygian) -> mode_intervals(3);
+mode_intervals(lydian) -> mode_intervals(4);
+mode_intervals(mixolydian) -> mode_intervals(5);
+mode_intervals(aeolian) -> mode_intervals(6);
+mode_intervals(locrian) -> mode_intervals(7).
 
 %% return all chromatic semitones from given note.
 -spec chromatica(note()) -> [note()].
@@ -81,3 +88,33 @@ add_column([], [], Acc) -> lists:reverse(Acc).
 chords(Key, ChordSize) ->
     Rotations = rotations(notes(Key), ChordSize),
     transpose(Rotations).
+
+-spec all_keys() -> [#key{}].
+all_keys() ->
+    lists:flatmap(fun(Note) ->
+			  lists:map(fun(Mode) ->
+					    #key{root = Note, mode = Mode}
+				    end,  lists:seq(1, 7))
+		  end, chromatica('C')).
+
+
+match_rate(SampleList, Notes) ->
+    Matches = lists:foldl(fun(El, Acc) ->
+				  case lists:member(El, SampleList) of
+				      true -> Acc + 1;
+				      false -> Acc
+				  end
+			  end, 0, Notes),
+    Matches / length(Notes).
+
+-spec key([note()]) -> [{MatchRate, #key{}}] when MatchRate :: float().
+key(Notes) ->
+    Rates = lists:map(fun(Key) ->
+			      {match_rate(Notes, notes(Key)), Key}
+		      end, all_keys()),
+    FilteredRates = lists:filter(fun({Rate, _}) ->
+					 Rate > 0
+				 end, Rates),
+    lists:sort(fun({Rate1, _}, {Rate2, _}) ->
+		       Rate1 > Rate2
+	       end, FilteredRates).
