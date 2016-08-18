@@ -12,37 +12,37 @@
 	       mode :: mode()}).
 
 -spec mode_intervals(mode()) -> [interval()].
-mode_intervals(1) -> [w, w, h, w, w, w, h];
-mode_intervals(2) -> [w, h, w, w, w, h, w];
-mode_intervals(3) -> [h, w, w, w, h, w, w];
-mode_intervals(4) -> [w, w, w, h, w, w, h];
-mode_intervals(5) -> [w, w, h, w, w, h, w];
-mode_intervals(6) -> [w, h, w, w, h, w, w];
-mode_intervals(7) -> [h, w, w, h, w, w, w];
-mode_intervals(major) -> mode_intervals(1);
-mode_intervals(minor) -> mode_intervals(6);
-mode_intervals(ionian) -> mode_intervals(1);
-mode_intervals(dorian) -> mode_intervals(2);
-mode_intervals(phrygian) -> mode_intervals(3);
-mode_intervals(lydian) -> mode_intervals(4);
+mode_intervals(1)          -> [w, w, h, w, w, w, h];
+mode_intervals(2)          -> [w, h, w, w, w, h, w];
+mode_intervals(3)          -> [h, w, w, w, h, w, w];
+mode_intervals(4)          -> [w, w, w, h, w, w, h];
+mode_intervals(5)          -> [w, w, h, w, w, h, w];
+mode_intervals(6)          -> [w, h, w, w, h, w, w];
+mode_intervals(7)          -> [h, w, w, h, w, w, w];
+mode_intervals(major)      -> mode_intervals(1);
+mode_intervals(minor)      -> mode_intervals(6);
+mode_intervals(ionian)     -> mode_intervals(1);
+mode_intervals(dorian)     -> mode_intervals(2);
+mode_intervals(phrygian)   -> mode_intervals(3);
+mode_intervals(lydian)     -> mode_intervals(4);
 mode_intervals(mixolydian) -> mode_intervals(5);
-mode_intervals(aeolian) -> mode_intervals(6);
-mode_intervals(locrian) -> mode_intervals(7).
+mode_intervals(aeolian)    -> mode_intervals(6);
+mode_intervals(locrian)    -> mode_intervals(7).
 
 %% return all chromatic semitones from given note.
 -spec chromatica(note()) -> [note()].
-chromatica('C') ->  ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+chromatica('C')  -> ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 chromatica('C#') -> ['C#','D','D#','E','F','F#','G','G#','A','A#','B','C'];
-chromatica('D') ->  ['D','D#','E','F','F#','G','G#','A','A#','B','C','C#'];
+chromatica('D')  -> ['D','D#','E','F','F#','G','G#','A','A#','B','C','C#'];
 chromatica('D#') -> ['D#','E','F','F#','G','G#','A','A#','B','C','C#','D'];
-chromatica('E') ->  ['E','F','F#','G','G#','A','A#','B','C','C#','D','D#'];
-chromatica('F') ->  ['F','F#','G','G#','A','A#','B','C','C#','D','D#','E'];
+chromatica('E')  -> ['E','F','F#','G','G#','A','A#','B','C','C#','D','D#'];
+chromatica('F')  -> ['F','F#','G','G#','A','A#','B','C','C#','D','D#','E'];
 chromatica('F#') -> ['F#','G','G#','A','A#','B','C','C#','D','D#','E','F'];
-chromatica('G') ->  ['G','G#','A','A#','B','C','C#','D','D#','E','F','F#'];
+chromatica('G')  -> ['G','G#','A','A#','B','C','C#','D','D#','E','F','F#'];
 chromatica('G#') -> ['G#','A','A#','B','C','C#','D','D#','E','F','F#','G'];
-chromatica('A') ->  ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#'];
+chromatica('A')  -> ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#'];
 chromatica('A#') -> ['A#','B','C','C#','D','D#','E','F','F#','G','G#','A'];
-chromatica('B') ->  ['B','C','C#','D','D#','E','F','F#','G','G#','A','A#'].
+chromatica('B')  -> ['B','C','C#','D','D#','E','F','F#','G','G#','A','A#'].
 
 -spec notes(#key{}) -> [note()].
 notes(#key{root = Root, mode = Mode}) ->

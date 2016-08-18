@@ -47,7 +47,7 @@ Mode can be number or atom:
  1. Ionian mode (major)
  2. Dorian mode
  3. Phrygian mode
- 4. Lidyan mode
+ 4. Lydian mode
  5. Mixolydian mode
  6. æolian mode (minor)
  7. Locrian mode
