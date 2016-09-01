@@ -2,15 +2,18 @@
 -author("Anton Zhiliuk").
 
 -export([notes/1, chords/2, key/1]).
--compile(export_all).
 
 -type note() :: 'C'|'C#'|'D'|'D#'|'E'|'F'|'F#'|'G'|'G#'|'A'|'A#'|'B'.
 -type mode() :: 1..7 | major | minor.
 -type interval() :: w | s.
 -type chord() :: [note()].
+-type guitar_string() :: 1..6.
+-type fret_number() :: pos_integer().
 
 -record(key, { root :: note(),
 	       mode :: mode()}).
+-record(fret, { string :: guitar_string(),
+		fret :: fret_number() }).
 
 -spec mode_intervals(mode()) -> [interval()].
 mode_intervals(1)          -> [w, w, h, w, w, w, h];
@@ -45,9 +48,20 @@ chromatica('A')  -> ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#'];
 chromatica('A#') -> ['A#','B','C','C#','D','D#','E','F','F#','G','G#','A'];
 chromatica('B')  -> ['B','C','C#','D','D#','E','F','F#','G','G#','A','A#'].
 
--spec notes(#key{}) -> [note()].
+-spec open_string(guitar_string()) -> note().
+open_string(6) -> 'E';
+open_string(5) -> 'A';
+open_string(4) -> 'D';
+open_string(3) -> 'G';
+open_string(2) -> 'B';
+open_string(1) -> 'E'.
+
+-spec notes(#key{} | [#fret{}]) -> [note()].
 notes(#key{root = Root, mode = Mode}) ->
-    notes(chromatica(Root), mode_intervals(Mode), []).
+    notes(chromatica(Root), mode_intervals(Mode), []);
+notes(Frets) ->
+    lists:map(fun fret_to_note/1, Frets).
+
 
 -spec notes([note()], [interval()], []) -> [note()].
 notes(_, [], Acc) ->
@@ -56,6 +70,19 @@ notes([Note1,_Note2|Notes], [w|Intervals], Acc) ->
     notes(Notes, Intervals, [Note1|Acc]);
 notes([Note|Notes], [h|Intervals], Acc) ->
     notes(Notes, Intervals, [Note|Acc]).
+
+-spec fret_to_note(#fret{}) -> note().
+fret_to_note(#fret{fret = 0, string = String}) ->
+    open_string(String);
+fret_to_note(#fret{fret = Fret, string = String}) ->
+    Chromatica = chromatica(open_string(String)),
+    find_note(Fret rem 12, Chromatica).
+
+find_note(0, [Head|_]) ->
+    Head;
+find_note(Fret, [_|Tail]) ->
+    find_note(Fret - 1, Tail).
+
 
 -spec rotations([note()], 3..6) -> [NoteRotation] when NoteRotation :: [note()].
 %% Used for generation of list rotations by 2:
