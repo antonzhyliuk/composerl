@@ -3,6 +3,8 @@
 
 -export([notes/1, chords/2, key/1]).
 
+-compile(export_all).
+
 -type note() :: 'C'|'C#'|'D'|'D#'|'E'|'F'|'F#'|'G'|'G#'|'A'|'A#'|'B'.
 -type mode() :: 1..7 | major | minor.
 -type interval() :: w | s.
@@ -62,6 +64,24 @@ notes(#key{root = Root, mode = Mode}) ->
 notes(Frets) ->
     lists:map(fun fret_to_note/1, Frets).
 
+pentatonic(1, Key) -> skip([4, 7], notes(Key));
+pentatonic(2, Key) -> skip([3, 7], notes(Key));
+pentatonic(3, Key) -> skip([1, 4], notes(Key));
+pentatonic(4, Key) -> skip([2, 6], notes(Key));
+pentatonic(major, Key) -> pentatonic(1, Key);
+pentatonic(minor, Key) -> pentatonic(4, Key).
+
+-spec skip(list(), [pos_integer()]) -> list().
+skip(Skips, List) ->
+    skip(lists:sort(Skips), List, [], 1).
+skip( _, [], Acc, _) ->
+    lists:reverse(Acc);
+skip([], List, Acc, _) ->
+    List ++ lists:reverse(Acc);
+skip([Skip|Skips], [_|Tail], Acc, Pos) when Pos == Skip ->
+    skip(Skips, Tail, Acc, Pos + 1);
+skip(Skips, [Head|Tail], Acc, Pos) ->
+    skip(Skips, Tail, [Head|Acc], Pos + 1).
 
 -spec notes([note()], [interval()], []) -> [note()].
 notes(_, [], Acc) ->
