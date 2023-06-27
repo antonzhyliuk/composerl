@@ -1,13 +1,14 @@
 # ComposERL #
-Tiny music composition helper implemented in Erlang.
 
-### usage example:
+ComposERL is a tiny music composition helper implemented in Erlang. It provides functionality to generate mathematical matches for keys based on a list of notes. Additionally, it offers features to query information about notes, chords (triads, sevenths, ninths, and eleventh), and scales in any key.
 
-Recently I've created very mellow progression of intervals during playing with my midi keyboard, for introducing new functions into composition I should decide to which key composition currently belongs (for breaking this next :). I extract all notes from midi and feed composerl:
+### Usage Example:
+
+To find the mathematical matches for keys based on a list of notes, you can use the following example:
 
 `composerl:key(['C#', 'G#', 'F#', 'F', 'E', 'D#', 'B']).`
 
-and composerl suggest to me bunch of keys:
+The result will be a list of key matches with their respective scores:
 
 ```
 [{0.8571428571428571,{key,'B',5}},
@@ -35,21 +36,19 @@ and composerl suggest to me bunch of keys:
  ...
 ```
 
-Now I know in which direction composition can flow naturally (In diatonic sense).
-
-Additionally you can ask composerl about notes and chords(triads, sevenths, ninths and eleventh) in any key. Key is record with declaration:
+Additionally, you can ask ComposERL about notes and chords(triads, sevenths, ninths, and eleventh) in any key. The key is a record:
 
 `-record(key, {root :: note(),
 	       mode :: mode()}).`
 
-Mode can be number or atom:
+The mode can be a number or an atom:
 
  1. Ionian mode (major)
  2. Dorian mode
  3. Phrygian mode
  4. Lydian mode
  5. Mixolydian mode
- 6. æolian mode (minor)
+ 6. Aeolian mode (minor)
  7. Locrian mode
 
 ```
@@ -69,9 +68,6 @@ composerl:chords({key, 'F#', 5}, 4).
 ```
 
 ### TO DO:
-1. Add more scales. (pentatonic, harmonic minor, octotonic, indian\celtic scale etc...)
+1. Add more scales. (pentatonic, harmonic minor, octatonic, etc...)
 2. Output to midi.
 3. Tooling for composing chord progressions.
-
-### Æ
-Music is Math.
