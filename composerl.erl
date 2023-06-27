@@ -1,5 +1,5 @@
 -module(composerl).
--author("Anton Zhiliuk").
+-author("Anton Žyluk").
 
 -export([notes/1, chords/2, key/1]).
 
